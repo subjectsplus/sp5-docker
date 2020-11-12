@@ -1,0 +1,55 @@
+version: '3.3'
+services:
+  mysql:
+    image: library/mysql:5.7.32
+    container_name: sp5_mysql
+    command: "--default_authentication_plugin=mysql_native_password"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "$MYSQL_ROOT_PASSWORD"
+      MYSQL_DATABASE: "$MYSQL_DATABASE"
+      MYSQL_USER: "$MYSQL_USER"
+      MYSQL_PASSWORD: "$MYSQL_PASSWORD"
+    ports:
+      - '3306:3306'
+    networks:
+      sp5-dev-local-network:
+        ipv4_address: 10.6.1.2
+    volumes:
+      - subjectsplus5-db:/var/lib/mysql
+
+  php-apache:
+    build:
+      context: .docker/php-apache/
+      dockerfile: Dockerfile
+      args:
+        - ${XDEBUG_IDEKEY}
+        - ${XDEBUG_REMOTE_PORT}
+        - ${XDEBUG_REMOTE_HOST}
+    container_name: sp5_php_apache
+    restart: always
+    ports:
+      - 82:80
+    volumes:
+      - .docker/config/vhosts:/etc/apache2/sites-enabled
+      - ${SUBJECTSPLUS_APP}:/home/wwwroot/subjectsplus
+    depends_on:
+      - mysql
+    networks:
+      sp5-dev-local-network:
+        ipv4_address: 10.6.1.3
+
+# Name our volumes
+volumes:
+  subjectsplus5-db:
+    driver: local
+
+# Local virtual network
+networks:
+  sp5-dev-local-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "sp5-dockernet"
+    ipam:
+      config:
+        - subnet: 10.6.1.0/16
