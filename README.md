@@ -4,3 +4,5 @@
 
 * Rename .env.default to .env
 * Pull subjectplus submodule
+
+`git submodule init`
