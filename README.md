@@ -18,7 +18,7 @@
     * `git checkout my-new-subjectsplus-branch`
     
 
-* Rename .env.default to .env
+* Copy .env.default to .env
 * Run docker-compose for the first time
     * `docker-compose up --build`
 
