@@ -10,7 +10,7 @@
 * Change into directory
     * `cd sp5-docker` 
 * Go to subjectplus main repo https://github.com/subjectsplus/SubjectsPlus
-   * Create your own branch - this is going to be your submodule and where most of the development occurs
+   * Create your own branch off of sp5-main - this is going to be your submodule and where most of the development occurs
    * my-initials-sp5-symfony-migrate      
 * Pull subjectplus submodule
     * `git submodule init`
