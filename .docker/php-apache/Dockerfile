@@ -1,4 +1,4 @@
-FROM appsvc/php:7.3-apache-xdebug_1908260522
+FROM appsvc/php:7.4-apache-xdebug_20200522.6
 
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
