@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
         vim \
         zip \
     && docker-php-ext-install -j$(nproc) iconv \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install pdo pdo_mysql
 
@@ -41,6 +41,6 @@ RUN chmod u+x /usr/local/bin/init.sh
 COPY ./wait-for-it/wait-for-it.sh /usr/local/wait-for-it.sh
 RUN chmod u+x /usr/local/wait-for-it.sh
 
-WORKDIR /home/wwwroot/subjectsplus
+WORKDIR /home/site/wwwroot/
 
 ENTRYPOINT ["/usr/local/bin/init.sh"]
