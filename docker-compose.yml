@@ -32,7 +32,8 @@ services:
       - 82:80
     volumes:
       - .docker/config/vhosts:/etc/apache2/sites-enabled
-      - ${SUBJECTSPLUS_APP}:/home/wwwroot/subjectsplus
+      - ${SUBJECTSPLUS_APP}:/home/site/wwwroot
+      - .docker/config/mods-available/mpm_prefork.conf:/etc/apache2/mods-available/mpm_prefork.conf
     depends_on:
       - mysql
     networks:
