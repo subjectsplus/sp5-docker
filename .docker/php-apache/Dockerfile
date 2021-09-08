@@ -41,6 +41,6 @@ RUN chmod u+x /usr/local/bin/init.sh
 COPY ./wait-for-it/wait-for-it.sh /usr/local/wait-for-it.sh
 RUN chmod u+x /usr/local/wait-for-it.sh
 
-WORKDIR /home/site/wwwroot/
+WORKDIR /home/site/wwwroot
 
 ENTRYPOINT ["/usr/local/bin/init.sh"]
