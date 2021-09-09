@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 
-#init_composer_dependecies() {
-#  echo $(date "+%T") "Installing composer dependencies"
-#  cd /home/wwwroot/sp-api
-#  composer install
-#  echo $(date "+%T") "Done installing composer dependencies"
-#}
-#
-#run_database_migrations() {
-#  echo $(date "+%T") "Running database migrations"
-#  cd /home/wwwroot/sp-api
-#  php bin/console --no-interaction doctrine:migrations:migrate
-#  echo $(date "+%T") "Done running database migrations"
-#}
-#
+init_composer_dependecies() {
+  echo $(date "+%T") "Installing composer dependencies"
+  cd /home/site/wwwroot
+  composer install
+  echo $(date "+%T") "Done installing composer dependencies"
+}
+
+run_database_migrations() {
+  echo $(date "+%T") "Running database migrations"
+  cd /home/site/wwwroot
+  php bin/console --no-interaction doctrine:migrations:migrate
+  echo $(date "+%T") "Done running database migrations"
+}
+
 #load_doctrine_fixtures() {
 #  echo $(date "+%T") "Loading doctrine fixtures"
-#  cd /home/wwwroot/sp-api
+#  cd /home/site/wwwroot
 #  bin/console doctrine:schema:drop --force && bin/console doctrine:schema:update --force && bin/console doctrine:fixtures:load -n
 #  echo $(date "+%T") "Done loading doctrine fixtures"
 #}
@@ -45,6 +45,8 @@ check_mysql_is_ready() {
 }
 
 
+init_composer_dependecies &
 add_host_docker_internal_to_hosts &
 check_mysql_is_ready
+run_database_migrations
 start_apache_server
