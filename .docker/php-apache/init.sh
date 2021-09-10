@@ -14,12 +14,12 @@ run_database_migrations() {
   echo $(date "+%T") "Done running database migrations"
 }
 
-load_doctrine_fixtures() {
-  echo $(date "+%T") "Loading doctrine fixtures"
-  cd /home/site/wwwroot
-  bin/console doctrine:schema:drop --force && bin/console doctrine:schema:update --force && bin/console doctrine:fixtures:load -n
-  echo $(date "+%T") "Done loading doctrine fixtures"
-}
+#load_doctrine_fixtures() {
+#  echo $(date "+%T") "Loading doctrine fixtures"
+#  cd /home/site/wwwroot
+#  bin/console doctrine:schema:drop --force && bin/console doctrine:schema:update --force && bin/console doctrine:fixtures:load -n
+#  echo $(date "+%T") "Done loading doctrine fixtures"
+#}
 
 add_host_docker_internal_to_hosts() {
   echo $(date "+%T") "Adding host.docker.internal to hosts file"
@@ -49,5 +49,4 @@ init_composer_dependecies &
 add_host_docker_internal_to_hosts &
 check_mysql_is_ready
 run_database_migrations
-load_doctrine_fixtures
 start_apache_server
