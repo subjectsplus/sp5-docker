@@ -192,5 +192,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+.DS_Store
 
 SP5-Docker.iml
