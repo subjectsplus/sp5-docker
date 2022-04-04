@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install pdo pdo_mysql \
+    && pecl install apcu && docker-php-ext-enable apcu \
     # Installation of Image Magic PHP Extension
     && apt install -y libmagickwand-dev --no-install-recommends && \
     pecl install imagick && docker-php-ext-enable imagick && \
@@ -21,6 +22,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
    mv composer.phar /usr/local/bin/composer
+
 
 #Remove php opcache file -only for development
 RUN rm -rf /usr/local/etc/php/conf.d/opcache-recommended.ini
