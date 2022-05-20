@@ -27,6 +27,10 @@ RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
 #Remove php opcache file -only for development
 RUN rm -rf /usr/local/etc/php/conf.d/opcache-recommended.ini
 
+#COPY usr-local-etc-php-confd/docker-php-ext-opcache.ini /usr/local/etc/php/conf.d/
+#COPY usr-local-etc-php-confd/opcache-recommended.ini /usr/local/etc/php/conf.d/
+COPY usr-local-etc-php-confd/docker-php-ext-apcu.ini /usr/local/etc/php/conf.d/
+
 # enable mods
 RUN a2enmod headers \
     rewrite
