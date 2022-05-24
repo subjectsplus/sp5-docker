@@ -27,25 +27,24 @@ RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
 #Remove php opcache file -only for development
 RUN rm -rf /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-#COPY usr-local-etc-php-confd/docker-php-ext-opcache.ini /usr/local/etc/php/conf.d/
-#COPY usr-local-etc-php-confd/opcache-recommended.ini /usr/local/etc/php/conf.d/
+# Enable APCU Cache
 COPY usr-local-etc-php-confd/docker-php-ext-apcu.ini /usr/local/etc/php/conf.d/
 
 # enable mods
 RUN a2enmod headers \
     rewrite
 
-ARG XDEBUG_IDEKEY
-ARG XDEBUG_REMOTE_HOST
-ARG XDEBUG_REMOTE_PORT
-
-RUN echo 'xdebug.idekey='$XDEBUG_IDEKEY >> /usr/local/etc/php/php.ini && \
-    echo 'xdebug.remote_host='$XDEBUG_REMOTE_HOST >> /usr/local/etc/php/php.ini && \
-    echo 'xdebug.remote_port='$XDEBUG_REMOTE_PORT >> /usr/local/etc/php/php.ini && \
-    echo 'xdebug.default_enable = off' >> /usr/local/etc/php/php.ini && \
-    echo 'xdebug.remote_enable = on' >> /usr/local/etc/php/php.ini && \
-    echo 'xdebug.remote_autostart = off' >> /usr/local/etc/php/php.ini && \
-    echo 'xdebug.remote_connect_back = off' >> /usr/local/etc/php/php.ini
+#ARG XDEBUG_IDEKEY
+#ARG XDEBUG_REMOTE_HOST
+#ARG XDEBUG_REMOTE_PORT
+#
+#RUN echo 'xdebug.idekey='$XDEBUG_IDEKEY >> /usr/local/etc/php/php.ini && \
+#    echo 'xdebug.remote_host='$XDEBUG_REMOTE_HOST >> /usr/local/etc/php/php.ini && \
+#    echo 'xdebug.remote_port='$XDEBUG_REMOTE_PORT >> /usr/local/etc/php/php.ini && \
+#    echo 'xdebug.default_enable = off' >> /usr/local/etc/php/php.ini && \
+#    echo 'xdebug.remote_enable = on' >> /usr/local/etc/php/php.ini && \
+#    echo 'xdebug.remote_autostart = off' >> /usr/local/etc/php/php.ini && \
+#    echo 'xdebug.remote_connect_back = off' >> /usr/local/etc/php/php.ini
 
 COPY init.sh /usr/local/bin/init.sh
 RUN chmod u+x /usr/local/bin/init.sh
