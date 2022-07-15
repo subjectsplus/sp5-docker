@@ -23,6 +23,19 @@ check_mysql_is_ready() {
   /usr/local/wait-for-it.sh sp5_mysql:3306 -s --timeout=920 -- echo "MySQL server is ready!"
 }
 
+run_database_migrations() {
+  echo $(date "+%T") "Running database migrations"
+  cd /home/site/wwwroot
+  php bin/console --no-interaction doctrine:migrations:migrate
+  echo $(date "+%T") "Done running database migrations"
+}
+
+run_composer_cache_clear() {
+    echo $(date "+%T") "Start Composer cache clear"
+    cd /home/site/wwwroot
+    composer clearcache
+    echo $(date "+%T") "Done Composer cache clear"
+}
 init_composer_dependecies() {
   echo $(date "+%T") "Installing composer dependencies"
   cd /home/site/wwwroot
@@ -30,12 +43,7 @@ init_composer_dependecies() {
   echo $(date "+%T") "Done installing composer dependencies"
 }
 
-run_database_migrations() {
-  echo $(date "+%T") "Running database migrations"
-  cd /home/site/wwwroot
-  php bin/console --no-interaction doctrine:migrations:migrate
-  echo $(date "+%T") "Done running database migrations"
-}
+
 
 #load_doctrine_fixtures() {
 #  echo $(date "+%T") "Loading doctrine fixtures"
@@ -88,6 +96,13 @@ run_symfony_cache_global_clear() {
   echo $(date "+%T") "Done symfony cache global clear"
 }
 
+run_symfony_cache_clear() {
+    echo $(date "+%T") "Running symfony cache clear"
+    cd /home/site/wwwroot
+    php bin/console cache:clear
+    echo $(date "+%T") "Done symfony cache  clear"
+}
+
 run_npm_cache_clean() {
   echo $(date "+%T") "Running npm cache clean"
   cd /home/site/wwwroot
@@ -109,7 +124,7 @@ run_yarn_install() {
 }
 
 run_yarn_encore_dev() {
-    echo "sleep for 5 seconds before starting apache2"
+    echo "sleep for 5 seconds before starting yarn encore dev"
     sleep 5
     echo $(date "+%T") "Running yarn encore dev"
     cd /home/site/wwwroot
@@ -126,17 +141,18 @@ start_apache_server() {
   /usr/sbin/apache2ctl -D FOREGROUND
 }
 
-run_composer_clearcache
+add_host_docker_internal_to_hosts &&
+check_mysql_is_ready &&
+run_database_migrations &&
+run_composer_clearcache &&
 init_composer_dependecies &
-add_host_docker_internal_to_hosts &
-check_mysql_is_ready
-run_database_migrations
-run_install_node
-run_install_nvm
-run_install_yarn
-run_symfony_cache_global_clear
-run_npm_cache_clean
-run_yarn_cache_clean
-run_yarn_install
-run_yarn_encore_dev
+run_install_node &&
+run_install_nvm &&
+run_install_yarn &&
+run_symfony_cache_global_clear &&
+run_symfony_cache_clear &&
+run_npm_cache_clean &&
+run_yarn_cache_clean &&
+run_yarn_install &&
+run_yarn_encore_dev &&
 start_apache_server
