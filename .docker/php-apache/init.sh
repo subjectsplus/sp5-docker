@@ -43,8 +43,6 @@ init_composer_dependecies() {
   echo $(date "+%T") "Done installing composer dependencies"
 }
 
-
-
 #load_doctrine_fixtures() {
 #  echo $(date "+%T") "Loading doctrine fixtures"
 #  cd /home/site/wwwroot
@@ -52,21 +50,9 @@ init_composer_dependecies() {
 #  echo $(date "+%T") "Done loading doctrine fixtures"
 #}
 
-
-run_install_node() {
-  echo $(date "+%T") "Installing NODE v14"
-  # https://github.com/nodesource/distributions/blob/master/README.md#debinstall
-  curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
-  apt-get install -y nodejs
-  echo $(date "+%T") "Finished installing NODE v14"
-  echo "Node version"
-  node -v
-}
-
 run_install_nvm() {
    echo $(date "+%T") "Installing nvm"
-   # https://tecadmin.net/how-to-install-nvm-on-debian-10/#:~:text=Installing%20NVM%20on%20Debian&text=Firstly%2C%20Open%20a%20terminal%20on,nvm%20installer%20script%20on%20terminal.&text=Above%20script%20makes%20all%20the,of%20current%20logged%20in%20user.
-
+   # https://tecadmin.net/how-to-install-nvm-on-debian-10/#:~:text=Installing%20NVM%20on%20Debian&text=Firstly%2C%20Open%20a%20terminal%20on,nvm%20installer%20script%20on%20terminal
    touch /root/.bashrc
    curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
    export NVM_DIR="$HOME/.nvm"
@@ -78,6 +64,16 @@ run_install_nvm() {
    nvm -v
 }
 
+run_install_node() {
+  echo $(date "+%T") "Installing NODE v14"
+  # https://github.com/nodesource/distributions/blob/master/README.md#debinstall
+  # curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+  # apt-get install -y nodejs
+  nvm install 14
+  echo $(date "+%T") "Finished installing NODE v14"
+  echo "Node version"
+  node -v
+}
 
 run_install_yarn() {
   echo $(date "+%T") "Installing yarn"
@@ -86,7 +82,6 @@ run_install_yarn() {
   echo $(date "+%T") "Finished Installing yarn"
   echo "yarn version"
   yarn -v
-
 }
 
 run_symfony_cache_global_clear() {
@@ -146,8 +141,8 @@ check_mysql_is_ready &&
 run_database_migrations &&
 run_composer_clearcache &&
 init_composer_dependecies &
-run_install_node &&
 run_install_nvm &&
+run_install_node &&
 run_install_yarn &&
 run_symfony_cache_global_clear &&
 run_symfony_cache_clear &&
