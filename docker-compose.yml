@@ -1,6 +1,7 @@
 version: '3.3'
 services:
   mysql:
+    platform: linux/amd64
     image: library/mysql:5.7.32
     container_name: sp5_mysql
     command: "--sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' --default_authentication_plugin=mysql_native_password --character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci"
@@ -19,6 +20,7 @@ services:
       - subjectsplus5-db:/var/lib/mysql
 
   php-apache:
+    platform: linux/amd64
     build:
       context: .docker/php-apache/
       dockerfile: Dockerfile
