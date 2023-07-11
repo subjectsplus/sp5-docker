@@ -43,6 +43,8 @@ init_composer_dependecies() {
   echo $(date "+%T") "Done installing composer dependencies"
 }
 
+
+
 #load_doctrine_fixtures() {
 #  echo $(date "+%T") "Loading doctrine fixtures"
 #  cd /home/site/wwwroot
@@ -50,9 +52,11 @@ init_composer_dependecies() {
 #  echo $(date "+%T") "Done loading doctrine fixtures"
 #}
 
+
 run_install_nvm() {
    echo $(date "+%T") "Installing nvm"
-   # https://tecadmin.net/how-to-install-nvm-on-debian-10/#:~:text=Installing%20NVM%20on%20Debian&text=Firstly%2C%20Open%20a%20terminal%20on,nvm%20installer%20script%20on%20terminal
+   # https://tecadmin.net/how-to-install-nvm-on-debian-10/#:~:text=Installing%20NVM%20on%20Debian&text=Firstly%2C%20Open%20a%20terminal%20on,nvm%20installer%20script%20on%20terminal.&text=Above%20script%20makes%20all%20the,of%20current%20logged%20in%20user.
+
    touch /root/.bashrc
    curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
    export NVM_DIR="$HOME/.nvm"
