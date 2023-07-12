@@ -196,3 +196,5 @@ dist
 SP5-Docker.iml
 
 SubjectsPlus
+
+.docker/certs
