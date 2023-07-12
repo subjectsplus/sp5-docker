@@ -5,7 +5,6 @@
 
 .idea/*
 # User-specific stuff
-.idea/*
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
@@ -195,3 +194,7 @@ dist
 .DS_Store
 
 SP5-Docker.iml
+
+SubjectsPlus
+
+.docker/certs
