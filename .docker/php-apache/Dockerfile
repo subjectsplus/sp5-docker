@@ -1,6 +1,7 @@
-FROM appsvc/php:7.4-apache-xdebug_20200522.6
+FROM mcr.microsoft.com/appsvc/php:7.4-apache-xdebug_20221208.1.tuxprod
+#FROM appsvc/php:7.4-apache-xdebug_20200522.6
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update -y --fix-missing && apt-get install -y --no-install-recommends sudo \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng-dev \
@@ -8,16 +9,28 @@ RUN apt-get update && apt-get install -y \
         git \
         vim \
         zip \
+        net-tools \
+        libapache2-mod-shib \
+        memcached \
+        libmemcached-tools \
+        libmemcached-dev \
+        net-tools \
+        netcat \
+        htop \
+        curl \
+        tzdata \
+        unzip \
     && docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install pdo pdo_mysql \
     && pecl install apcu && docker-php-ext-enable apcu \
     # Installation of Image Magic PHP Extension
-    && apt install -y libmagickwand-dev --no-install-recommends && \
-    pecl install imagick && docker-php-ext-enable imagick && \
+    && apt install -y libmagickwand-dev --no-install-recommends \
+    && docker-php-ext-enable imagick \
     # Removal of packages that are only used to compile/install the extensions
-    rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 
 RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
@@ -33,6 +46,9 @@ COPY usr-local-etc-php-confd/docker-php-ext-apcu.ini /usr/local/etc/php/conf.d/
 # enable mods
 RUN a2enmod headers \
     rewrite
+
+
+RUN echo "Mutex posixsem" >> /etc/apache2/apache2.conf
 
 #ARG XDEBUG_IDEKEY
 #ARG XDEBUG_REMOTE_HOST
