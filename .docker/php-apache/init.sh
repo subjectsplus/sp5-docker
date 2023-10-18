@@ -138,6 +138,7 @@ start_apache_server() {
   echo $(date "+%T") "Starting apache2"
   sed -i "s/{PORT}/80/g" /etc/apache2/apache2.conf
   /usr/sbin/apache2ctl -D FOREGROUND
+  echo "Your environment is ready!"
 }
 
 add_host_docker_internal_to_hosts &&
