@@ -36,6 +36,8 @@ services:
       - .docker/config/vhosts:/etc/apache2/sites-enabled
       - ${SUBJECTSPLUS_APP}:/home/site/wwwroot
       - .docker/config/mods-available/mpm_prefork.conf:/etc/apache2/mods-available/mpm_prefork.conf
+    environment:
+      - PHP_MEMORY_LIMIT=512M
     depends_on:
       - mysql
     networks:
