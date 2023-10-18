@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/appsvc/php:7.4-apache-xdebug_20221208.1.tuxprod
+FROM mcr.microsoft.com/appsvc/php:8.0-apache-xdebug_20230721.2.tuxprod
+#FROM mcr.microsoft.com/appsvc/php:7.4-apache-xdebug_20221208.1.tuxprod
 #FROM appsvc/php:7.4-apache-xdebug_20200522.6
 
 RUN apt-get update -y --fix-missing && apt-get install -y --no-install-recommends sudo \
