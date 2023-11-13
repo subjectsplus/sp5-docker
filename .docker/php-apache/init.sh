@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+modify_local_phpini() {
+  {
+    # increase php max upload file size
+    echo -e "upload_max_filesize=16M"
+
+    # disable zend xdebug
+    echo -e "; zend_extension=xdebug.so"
+
+    # increase php memory limit. default is 128.
+    echo -e "memory_limit=512M"
+  } >> /usr/local/etc/php/conf.d/php.ini
+}
+
+
 run_composer_clearcache() {
   echo $(date "+%T") "Running composer clearcache"
   cd /home/site/wwwroot
@@ -21,6 +35,18 @@ add_host_docker_internal_to_hosts() {
 check_mysql_is_ready() {
   echo "Checking MySQL server is ready"
   /usr/local/wait-for-it.sh sp5_mysql:3306 -s --timeout=920 -- echo "MySQL server is ready!"
+}
+
+run_install_composer() {
+  echo "Install Composer"
+  curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
+     mv composer.phar /usr/local/bin/composer
+}
+
+run_install_symfony_cli() {
+  echo "Install Symfony CLI"
+  curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | sudo -E bash && \
+      apt install symfony-cli
 }
 
 run_database_migrations() {
@@ -134,15 +160,22 @@ run_yarn_encore_dev() {
 start_apache_server() {
   # start apache2
   echo "sleep for 10 seconds before starting apache2"
+  echo "Your environment is ready when the terminal displays: Command line: '/usr/sbin/apache2 -D FOREGROUND' "
   sleep 10
   echo $(date "+%T") "Starting apache2"
   sed -i "s/{PORT}/80/g" /etc/apache2/apache2.conf
+
   /usr/sbin/apache2ctl -D FOREGROUND
-  echo "Your environment is ready!"
+
 }
+
+
 
 add_host_docker_internal_to_hosts &&
 check_mysql_is_ready &&
+modify_local_phpini &&
+run_install_composer &&
+run_install_symfony_cli &&
 run_database_migrations &&
 run_composer_clearcache &&
 init_composer_dependecies &

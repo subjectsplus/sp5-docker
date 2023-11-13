@@ -1,0 +1,37 @@
+# Display PHP version
+echo "=== PHP Version ==="
+php -v | head -n 1
+
+# Display Composer version
+echo "=== Composer Version ==="
+composer --version
+
+# Display Node.js version
+echo "=== Node Version ==="
+node -v
+
+# Display Yarn version
+echo "=== Yarn Version ==="
+yarn -v
+
+# Display Debian version
+echo "=== Debian Version ==="
+cat /etc/os-release
+
+# set lang utf-8
+export LANG=en_US.UTF-8
+
+# Display $LANG
+echo "=== LANG ==="
+echo $LANG
+
+# Display Timezone
+echo "=== Timezone ==="
+echo "Current Timezone: $(date +'%Z')"
+
+# Build File
+echo "=== Build File ==="
+echo "The build file is located: /usr/local/bin/sp-build.sh"
+echo "To use: cd into that directory and enter ./sp-build.sh"
+
+# Additional aliases or functions can be added here

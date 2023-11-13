@@ -34,15 +34,12 @@ RUN apt-get update -y --fix-missing && apt-get install -y --no-install-recommend
     && apt-get clean
 
 
-RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
-   mv composer.phar /usr/local/bin/composer
-
 
 #Remove php opcache file -only for development
 RUN rm -rf /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 # Enable APCU Cache
-COPY usr-local-etc-php-confd/docker-php-ext-apcu.ini /usr/local/etc/php/conf.d/
+COPY php-apache/usr-local-etc-php-confd/docker-php-ext-apcu.ini /usr/local/etc/php/conf.d/
 
 # enable mods
 RUN a2enmod headers \
@@ -63,12 +60,26 @@ RUN echo "Mutex posixsem" >> /etc/apache2/apache2.conf
 #    echo 'xdebug.remote_autostart = off' >> /usr/local/etc/php/php.ini && \
 #    echo 'xdebug.remote_connect_back = off' >> /usr/local/etc/php/php.ini
 
-COPY init.sh /usr/local/bin/init.sh
-RUN chmod u+x /usr/local/bin/init.sh
+# Copy your local_bashrc file to the home directory of the user (e.g., root)
+COPY php-apache/root/local_bashrc /root/local_bashrc
 
-COPY ./wait-for-it/wait-for-it.sh /usr/local/wait-for-it.sh
+# Append the source command to the main .bashrc file
+RUN echo "source ~/local_bashrc" >> /root/.bashrc
+
+# Set global git user
+RUN git config --global user.email "webmaster.lib@miami.edu" && git config --global user.name "WADTeam" && git config --global --add safe.directory /home/site/wwwroot
+
+# copy the deploy file that updates the symfony app
+COPY php-apache/usr/local/bin/sp-build.sh /usr/local/bin/sp-build.sh
+RUN chmod u+x /usr/local/bin/sp-build.sh
+
+# copy the docker start up file
+COPY php-apache/usr/local/bin/sp-init.sh /usr/local/bin/sp-init.sh
+RUN chmod u+x /usr/local/bin/sp-init.sh
+
+COPY php-apache/wait-for-it/wait-for-it.sh /usr/local/wait-for-it.sh
 RUN chmod u+x /usr/local/wait-for-it.sh
 
 WORKDIR /home/site/wwwroot
 
-ENTRYPOINT ["/usr/local/bin/init.sh"]
+ENTRYPOINT ["/usr/local/bin/sp-init.sh"]
