@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/appsvc/php:8.0-apache-xdebug_20230721.2.tuxprod
+FROM mcr.microsoft.com/appsvc/php:8.3-apache_20250314.2.tuxprod
+# FROM mcr.microsoft.com/appsvc/php:8.0-apache-xdebug_20230721.2.tuxprod
 #FROM mcr.microsoft.com/appsvc/php:7.4-apache-xdebug_20221208.1.tuxprod
 #FROM appsvc/php:7.4-apache-xdebug_20200522.6
 
@@ -16,18 +17,21 @@ RUN apt-get update -y --fix-missing && apt-get install -y --no-install-recommend
         libmemcached-tools \
         libmemcached-dev \
         net-tools \
-        netcat \
+        netcat-openbsd \
         htop \
         curl \
         tzdata \
         unzip \
+        libargon2-1 \
     && docker-php-ext-install -j$(nproc) iconv \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
     && docker-php-ext-install pdo pdo_mysql \
+    && docker-php-ext-install zip \
     && pecl install apcu && docker-php-ext-enable apcu \
     # Installation of Image Magic PHP Extension
     && apt install -y libmagickwand-dev --no-install-recommends \
+    && pecl install imagick \
     && docker-php-ext-enable imagick \
     # Removal of packages that are only used to compile/install the extensions
     && rm -rf /var/lib/apt/lists/* \

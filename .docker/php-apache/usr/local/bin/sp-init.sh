@@ -39,6 +39,20 @@ modify_local_phpini() {
   } >> /usr/local/etc/php/conf.d/php.ini
 }
 
+patch_symfony_assert_warning() {
+  local file="/home/site/wwwroot/vendor/symfony/runtime/Internal/BasicErrorHandler.php"
+  if [[ -f "$file" ]]; then
+    echo "Patching assert.warning in BasicErrorHandler.php…"
+    # change ini_set('assert.warning', 0) → ini_set('assert.warning', 1)
+    sed -ri \
+      -e "s/(ini_set\('assert.warning',[[:space:]]*)0/\11/" \
+      "$file"
+    echo "Patch applied."
+  else
+    echo "Warning: $file not found, skipping Symfony assert warning patch."
+  fi
+}
+
 add_host_docker_internal_to_hosts() {
   echo $(date "+%T") "Adding host.docker.internal to hosts file"
   HOST_DOMAIN="host.docker.internal"
@@ -107,11 +121,13 @@ install_composer() {
       apt update
 
       # Install dependencies
-      apt install php-cli php-zip unzip -y
+      apt install -y unzip curl
 
       # Download and install Composer globally
+      EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
       php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-      php -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+      ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
+      php -r "if ('$EXPECTED_CHECKSUM' === '$ACTUAL_CHECKSUM') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
       php composer-setup.php
       php -r "unlink('composer-setup.php');"
 
@@ -157,6 +173,7 @@ start_apache_server() {
 add_host_docker_internal_to_hosts &&
 check_mysql_is_ready &&
 modify_local_phpini &&
+patch_symfony_assert_warning &&
 install_nodejs &&
 install_yarn &&
 install_composer &&
