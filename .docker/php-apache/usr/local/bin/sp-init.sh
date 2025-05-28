@@ -5,18 +5,17 @@ service ssh start
 
 cat <<EOL >/etc/motd
 
-UU   UU MM    MM LL          SSSSS  PPPPPP  555555
-UU   UU MMM  MMM LL         SS      PP   PP 55
-UU   UU MM MM MM LL          SSSSS  PPPPPP  555555
-UU   UU MM    MM LL              SS PP         5555
- UUUUU  MM    MM LLLLLLL     SSSSS  PP      555555
+ SSSSS  PPPPPP  555555     DDDDD
+SS      PP   PP 55         DD  DD    eee  vv   vv
+ SSSSS  PPPPPP  555555     DD   DD ee   e  vv vv
+     SS PP         5555    DD   DD eeeee    vvv
+ SSSSS  PP      555555     DDDDDD   eeeee    v
 
 
 Documentation: http://aka.ms/webapp-linux
 PHP quickstart: https://aka.ms/php-qs
 
 EOL
-
 cat /etc/motd
 
 
@@ -36,6 +35,12 @@ modify_local_phpini() {
 
     # increase php memory limit. default is 128.
     echo -e "memory_limit=512M"
+
+    # Increase max execution time to 120 seconds
+    echo -e "max_execution_time=120"
+
+    # Increase max input time to 120 seconds
+    echo -e "max_input_time=120"
   } >> /usr/local/etc/php/conf.d/php.ini
 }
 
@@ -96,36 +101,79 @@ install_yarn() {
 }
 
 
+#install_composer() {
+#  # Check if Composer is already installed globally
+#  if [ -x "$(command -v composer)" ]; then
+#      echo "Composer is already installed globally."
+#  else
+#      echo "######################################################"
+#      echo "composer Start Install"
+#      # Update the package repository
+#      apt update
+#
+#      # Install dependencies
+#      apt install php-cli php-zip unzip -y
+#
+#      # Download and install Composer globally
+#      php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+#      php -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+#      php composer-setup.php
+#      php -r "unlink('composer-setup.php');"
+#
+#      mv composer.phar /usr/local/bin/composer
+#
+#      # Verify Composer installation
+#      composer --version
+#
+#      # Cleanup
+#      apt autoremove --purge -y
+#
+#      echo "composer End Install"
+#      echo "######################################################"
+#  fi
+#}
+
 install_composer() {
+  echo "######################################################"
+  echo "Composer Start Install"
+
   # Check if Composer is already installed globally
-  if [ -x "$(command -v composer)" ]; then
-      echo "Composer is already installed globally."
+  if command -v composer &> /dev/null; then
+    echo "Composer is already installed globally."
+    composer --version
   else
-      echo "######################################################"
-      echo "composer Start Install"
-      # Update the package repository
-      apt update
+    echo "Installing Composer..."
 
-      # Install dependencies
-      apt install php-cli php-zip unzip -y
 
-      # Download and install Composer globally
-      php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-      php -r "if (hash_file('sha384', 'composer-setup.php') === 'e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-      php composer-setup.php
-      php -r "unlink('composer-setup.php');"
+    # Download and verify Composer installer
+    EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
 
-      mv composer.phar /usr/local/bin/composer
+    if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then
+      >&2 echo 'ERROR: Invalid installer checksum'
+      rm composer-setup.php
+      exit 1
+    fi
 
-      # Verify Composer installation
+    # Install Composer
+    php composer-setup.php --quiet --install-dir=/usr/local/bin --filename=composer
+    RESULT=$?
+    rm composer-setup.php
+
+    # Verify installation
+    if [ $RESULT -eq 0 ]; then
+      echo "Composer installed successfully."
       composer --version
+    else
+      >&2 echo "ERROR: Composer installation failed"
+      exit 1
+    fi
 
-      # Cleanup
-      apt autoremove --purge -y
-
-      echo "composer End Install"
-      echo "######################################################"
   fi
+
+  echo "Composer End Install"
+  echo "######################################################"
 }
 
 install_symfony_cli() {
@@ -154,6 +202,30 @@ start_apache_server() {
 }
 
 
+set_public_directory_permissions() {
+    echo "Setting correct permissions for Symfony public directory"
+
+    PUBLIC_DIR="/home/site/wwwroot/public"
+
+    if [ -d "$PUBLIC_DIR" ]; then
+        echo "Setting permissions for public directory"
+
+        # Set directory permissions
+        find "$PUBLIC_DIR" -type d -exec chmod 755 {} +
+
+        # Set file permissions
+        find "$PUBLIC_DIR" -type f -exec chmod 644 {} +
+
+        # Ensure the web server can write to the public directory if needed
+        chown -R www-data:www-data "$PUBLIC_DIR"
+
+        echo "Public directory permissions have been set"
+    else
+        echo "Public directory not found at $PUBLIC_DIR"
+    fi
+}
+
+
 add_host_docker_internal_to_hosts &&
 check_mysql_is_ready &&
 modify_local_phpini &&
@@ -161,4 +233,5 @@ install_nodejs &&
 install_yarn &&
 install_composer &&
 install_symfony_cli &&
+set_public_directory_permissions &&
 start_apache_server
