@@ -1,37 +1,24 @@
-FROM mcr.microsoft.com/appsvc/php:8.0-apache-xdebug_20230721.2.tuxprod
+FROM mcr.microsoft.com/appsvc/php:8.0-apache_20240806.1.tuxprod
+#FROM mcr.microsoft.com/appsvc/php:8.0-apache_20240502.1.tuxprod
+#FROM mcr.microsoft.com/appsvc/php:8.0-apache-xdebug_20230721.2.tuxprod
 #FROM mcr.microsoft.com/appsvc/php:7.4-apache-xdebug_20221208.1.tuxprod
 #FROM appsvc/php:7.4-apache-xdebug_20200522.6
 
-RUN apt-get update -y --fix-missing && apt-get install -y --no-install-recommends sudo \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
-        iputils-ping \
-        git \
-        vim \
-        zip \
-        net-tools \
-        libapache2-mod-shib \
-        memcached \
-        libmemcached-tools \
-        libmemcached-dev \
-        net-tools \
-        netcat \
-        htop \
-        curl \
-        tzdata \
-        unzip \
-    && docker-php-ext-install -j$(nproc) iconv \
-    && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install pdo pdo_mysql \
-    && pecl install apcu && docker-php-ext-enable apcu \
-    # Installation of Image Magic PHP Extension
-    && apt install -y libmagickwand-dev --no-install-recommends \
-    && docker-php-ext-enable imagick \
-    # Removal of packages that are only used to compile/install the extensions
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+# Install dependencies, PHP extensions, set locale, and configure timezone in one RUN command to minimize layers
+RUN apt-get update -y --fix-missing && \
+    apt-get install -y --no-install-recommends sudo locales libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+    iputils-ping git vim zip net-tools memcached libmemcached-tools libmemcached-dev net-tools netcat htop curl \
+    tzdata unzip debconf-utils libmagickwand-dev && \
+    docker-php-ext-install -j$(nproc) iconv && \
+    docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ && \
+    docker-php-ext-install -j$(nproc) gd pdo pdo_mysql && \
+    pecl install apcu && docker-php-ext-enable apcu && \
+    docker-php-ext-enable imagick && \
+    locale-gen en_US.UTF-8 && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    # Enable Apache mods in the same layer
+    a2enmod headers rewrite
 
 
 
@@ -79,6 +66,9 @@ RUN chmod u+x /usr/local/bin/sp-init.sh
 
 COPY php-apache/wait-for-it/wait-for-it.sh /usr/local/wait-for-it.sh
 RUN chmod u+x /usr/local/wait-for-it.sh
+
+# Copy Symfony environment file
+COPY ./symfony/.env.richter.dev.symfony /home/site/wwwroot/.env
 
 WORKDIR /home/site/wwwroot
 
