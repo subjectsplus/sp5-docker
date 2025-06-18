@@ -198,3 +198,6 @@ SP5-Docker.iml
 SubjectsPlus
 
 .docker/certs
+
+#Ignore vscode AI rules
+.github/copilot-instructions.md
