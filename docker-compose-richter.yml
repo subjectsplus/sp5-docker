@@ -3,7 +3,7 @@ services:
   mysql:
     platform: linux/amd64
     image: library/mysql:5.7.32
-    container_name: sp5_mysql
+    container_name: "$MYSQL_CONTAINER_NAME"
     command: "--sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' --default_authentication_plugin=mysql_native_password --character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci"
     restart: always
     environment:
@@ -28,10 +28,10 @@ services:
         - ${XDEBUG_IDEKEY}
         - ${XDEBUG_REMOTE_PORT}
         - ${XDEBUG_REMOTE_HOST}
-    container_name: sp5_php_apache
+    container_name: "$PHP_APACHE_CONTAINER_NAME"
     restart: always
     ports:
-      - 82:80
+      - ${PHP_APACHE_PORTS}
     volumes:
       - .docker/config/vhosts:/etc/apache2/sites-enabled
       - ${SUBJECTSPLUS_APP}:/home/site/wwwroot
