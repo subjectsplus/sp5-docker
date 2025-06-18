@@ -56,8 +56,8 @@ add_host_docker_internal_to_hosts() {
 }
 
 check_mysql_is_ready() {
-  echo "Checking MySQL server is ready"
-  /usr/local/wait-for-it.sh sp5_mysql:3306 -s --timeout=920 -- echo "MySQL server is ready!"
+  echo "Checking MySQL sp5_richter_mysql server is ready"
+  /usr/local/wait-for-it.sh sp5_richter_mysql:3306 -s --timeout=920 -- echo "MySQL sp5_richter_mysql server is ready!"
 }
 
 install_nodejs() {
