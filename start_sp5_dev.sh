@@ -38,12 +38,6 @@ fi
 
 echo "🔧 Setting up environment for $INSTITUTION [$ENV]"
 
-# Create environment-specific docker-compose file
-cp docker-compose.yml "$ENV_DOCKER_COMPOSE.yml"
-
-# Replace the volume name with environment-specific name
-sed -i '' "s/subjectsplus5-db/${INSTITUTION}-subjectsplus5-db/g" "$ENV_DOCKER_COMPOSE.yml"
-
 
 # Copy Symfony env to .env.local so Symfony picks it up automatically
 cp "$ENV_SYMFONY" SubjectsPlus/.env
