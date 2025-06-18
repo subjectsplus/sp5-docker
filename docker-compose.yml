@@ -44,12 +44,6 @@ services:
       sp5-dev-local-network:
         ipv4_address: 10.6.1.3
 
-  mailer:
-    image: schickling/mailcatcher
-    ports:
-      - "1025:1025"
-      - "1080:1080"
-
 # Name our volumes
 volumes:
   subjectsplus5-db:
@@ -63,4 +57,4 @@ networks:
       com.docker.network.bridge.name: "sp5-dockernet"
     ipam:
       config:
-        - subnet: 10.6.1.0/16
+        - subnet: 10.6.0.0/16
