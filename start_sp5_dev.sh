@@ -49,9 +49,9 @@ fi
 
 echo "🔧 Setting up environment for $INSTITUTION [$ENV]"
 
-# Copy Symfony env to .env.local so Symfony picks it up automatically
-cp "$ENV_SYMFONY" SubjectsPlus/.env.local
-echo "✅ Copied $ENV_SYMFONY to SubjectsPlus/.env.local"
+# Copy Symfony env to .env so Symfony picks it up automatically
+cp "$ENV_SYMFONY" SubjectsPlus/.env
+echo "✅ Copied $ENV_SYMFONY to SubjectsPlus/.env"
 
 # Start Docker containers using the --env-file flag for instance-specific env
 
