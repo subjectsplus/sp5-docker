@@ -55,11 +55,6 @@ add_host_docker_internal_to_hosts() {
   echo $(date "+%T") "Done adding host.docker.internal to hosts file"
 }
 
-check_mysql_is_ready() {
-  echo "Checking MySQL sp5_richter_mysql server is ready"
-  /usr/local/wait-for-it.sh sp5_richter_mysql:3306 -s --timeout=920 -- echo "MySQL sp5_richter_mysql server is ready!"
-}
-
 install_nodejs() {
   # https://github.com/nodesource/distributions#debian-versions
   echo "######################################################"
@@ -227,11 +222,9 @@ set_public_directory_permissions() {
 
 
 add_host_docker_internal_to_hosts &&
-check_mysql_is_ready &&
 modify_local_phpini &&
 install_nodejs &&
 install_yarn &&
 install_composer &&
-install_symfony_cli &&
 set_public_directory_permissions &&
 start_apache_server

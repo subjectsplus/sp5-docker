@@ -35,18 +35,6 @@ RUN a2enmod headers \
 
 RUN echo "Mutex posixsem" >> /etc/apache2/apache2.conf
 
-#ARG XDEBUG_IDEKEY
-#ARG XDEBUG_REMOTE_HOST
-#ARG XDEBUG_REMOTE_PORT
-#
-#RUN echo 'xdebug.idekey='$XDEBUG_IDEKEY >> /usr/local/etc/php/php.ini && \
-#    echo 'xdebug.remote_host='$XDEBUG_REMOTE_HOST >> /usr/local/etc/php/php.ini && \
-#    echo 'xdebug.remote_port='$XDEBUG_REMOTE_PORT >> /usr/local/etc/php/php.ini && \
-#    echo 'xdebug.default_enable = off' >> /usr/local/etc/php/php.ini && \
-#    echo 'xdebug.remote_enable = on' >> /usr/local/etc/php/php.ini && \
-#    echo 'xdebug.remote_autostart = off' >> /usr/local/etc/php/php.ini && \
-#    echo 'xdebug.remote_connect_back = off' >> /usr/local/etc/php/php.ini
-
 # Copy your local_bashrc file to the home directory of the user (e.g., root)
 COPY php-apache/root/local_bashrc /root/local_bashrc
 
@@ -64,11 +52,6 @@ RUN chmod u+x /usr/local/bin/sp-build.sh
 COPY php-apache/usr/local/bin/sp-init.sh /usr/local/bin/sp-init.sh
 RUN chmod u+x /usr/local/bin/sp-init.sh
 
-COPY php-apache/wait-for-it/wait-for-it.sh /usr/local/wait-for-it.sh
-RUN chmod u+x /usr/local/wait-for-it.sh
-
-# Copy Symfony environment file
-COPY ./symfony/.env.richter.dev.symfony /home/site/wwwroot/.env
 
 WORKDIR /home/site/wwwroot
 
