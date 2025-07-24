@@ -1,23 +1,29 @@
-version: '3.3'
 services:
   mysql:
     platform: linux/amd64
     image: library/mysql:5.7.32
-    container_name: "$MYSQL_CONTAINER_NAME"
+    container_name: sp5_richter_mysql
     command: "--sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' --default_authentication_plugin=mysql_native_password --character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci"
-    restart: always
+    restart: no
+    env_file:
+      - .env.docker.richter.dev
     environment:
       MYSQL_ROOT_PASSWORD: "$MYSQL_ROOT_PASSWORD"
       MYSQL_DATABASE: "$MYSQL_DATABASE"
       MYSQL_USER: "$MYSQL_USER"
       MYSQL_PASSWORD: "$MYSQL_PASSWORD"
     ports:
-      - '3306:3306'
+      - '3307:3306'
     networks:
-      sp5-dev-local-network:
-        ipv4_address: 10.6.1.2
+      richter-network:
+        ipv4_address: 172.26.1.2
     volumes:
       - richter-subjectsplus5-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   php-apache:
     platform: linux/amd64
@@ -25,24 +31,28 @@ services:
       context: .docker/
       dockerfile: Dockerfile
       args:
-        - ${XDEBUG_IDEKEY}
-        - ${XDEBUG_REMOTE_PORT}
-        - ${XDEBUG_REMOTE_HOST}
-    container_name: "$PHP_APACHE_CONTAINER_NAME"
-    restart: always
+        - "PHPSTORM"
+        - "9003"
+        - "host.docker.internal"
+    container_name: sp5_richter_php_apache
+    restart: no
+    env_file:
+      - .env.docker.richter.dev
     ports:
-      - ${PHP_APACHE_PORTS}
+      - "83:80"
     volumes:
       - .docker/config/vhosts:/etc/apache2/sites-enabled
-      - ${SUBJECTSPLUS_APP}:/home/site/wwwroot
+      - ./SubjectsPlus:/home/site/wwwroot
       - .docker/config/mods-available/mpm_prefork.conf:/etc/apache2/mods-available/mpm_prefork.conf
     environment:
       - PHP_MEMORY_LIMIT=512M
+      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@sp5_richter_mysql:3306/${MYSQL_DATABASE}?serverVersion=5.7
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
-      sp5-dev-local-network:
-        ipv4_address: 10.6.1.3
+      richter-network:
+        ipv4_address: 172.26.1.3
 
 #  mailer:
 #    image: schickling/mailcatcher
@@ -57,10 +67,8 @@ volumes:
 
 # Local virtual network
 networks:
-  sp5-dev-local-network:
+  richter-network:
     driver: bridge
-    driver_opts:
-      com.docker.network.bridge.name: "sp5-dockernet"
     ipam:
       config:
-        - subnet: 10.6.0.0/16
+        - subnet: 172.26.0.0/16
