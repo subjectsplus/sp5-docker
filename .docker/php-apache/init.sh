@@ -175,7 +175,6 @@ add_host_docker_internal_to_hosts &&
 check_mysql_is_ready &&
 modify_local_phpini &&
 run_install_composer &&
-run_install_symfony_cli &&
 run_database_migrations &&
 run_composer_clearcache &&
 init_composer_dependecies &
