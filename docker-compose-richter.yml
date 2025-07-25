@@ -13,7 +13,7 @@ services:
       MYSQL_USER: "$MYSQL_USER"
       MYSQL_PASSWORD: "$MYSQL_PASSWORD"
     ports:
-      - '3307:3306'
+      - '3306:3306'
     networks:
       richter-network:
         ipv4_address: 172.26.1.2
@@ -46,7 +46,6 @@ services:
       - .docker/config/mods-available/mpm_prefork.conf:/etc/apache2/mods-available/mpm_prefork.conf
     environment:
       - PHP_MEMORY_LIMIT=512M
-      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@sp5_richter_mysql:3306/${MYSQL_DATABASE}?serverVersion=5.7
     depends_on:
       mysql:
         condition: service_healthy
