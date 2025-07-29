@@ -2,16 +2,16 @@ services:
   mysql:
     platform: linux/amd64
     image: library/mysql:5.7.32
-    container_name: sp5_mysql
+    container_name: "$MYSQL_CONTAINER_NAME"
     command: "--sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' --default_authentication_plugin=mysql_native_password --character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci"
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: "$MYSQL_ROOT_PASSWORD"
       MYSQL_DATABASE: "$MYSQL_DATABASE"
       MYSQL_USER: "$MYSQL_USER"
       MYSQL_PASSWORD: "$MYSQL_PASSWORD"
     ports:
-      - '3306:3306'
+      - "${MYSQL_CONTAINER_PORTS}"
     networks:
       sp5-dev-local-network:
         ipv4_address: 10.6.1.2
@@ -28,9 +28,9 @@ services:
         - ${XDEBUG_REMOTE_PORT}
         - ${XDEBUG_REMOTE_HOST}
     container_name: sp5_php_apache
-    restart: always
+    restart: unless-stopped
     ports:
-      - 82:80
+      - "${PHP_APACHE_PORTS}"
     volumes:
       - .docker/config/vhosts:/etc/apache2/sites-enabled
       - ${SUBJECTSPLUS_APP}:/home/site/wwwroot
