@@ -2,7 +2,7 @@ services:
   mysql:
     platform: linux/amd64
     image: library/mysql:5.7.32
-    container_name: sp5_calder_mysql
+    container_name: "$MYSQL_CONTAINER_NAME"
     command: "--sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' --default_authentication_plugin=mysql_native_password --character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci"
     restart: always
     env_file:
@@ -13,7 +13,7 @@ services:
       MYSQL_USER: "$MYSQL_USER"
       MYSQL_PASSWORD: "$MYSQL_PASSWORD"
     ports:
-      - '3306:3306'
+      - "${MYSQL_CONTAINER_PORTS}"
     networks:
       calder-network:
         ipv4_address: 172.25.1.2
@@ -34,31 +34,24 @@ services:
         - "PHPSTORM"
         - "9003"
         - "host.docker.internal"
-    container_name: sp5_calder_php_apache
+    container_name: "$PHP_APACHE_CONTAINER_NAME"
     restart: always
     env_file:
       - .env.docker.calder.dev
     ports:
-      - "82:80"
+      - "${PHP_APACHE_PORTS}"
     volumes:
       - .docker/config/vhosts:/etc/apache2/sites-enabled
       - ./SubjectsPlus:/home/site/wwwroot
       - .docker/config/mods-available/mpm_prefork.conf:/etc/apache2/mods-available/mpm_prefork.conf
     environment:
       - PHP_MEMORY_LIMIT=512M
-      - DATABASE_URL=mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@sp5_calder_mysql:3306/${MYSQL_DATABASE}?serverVersion=5.7
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       calder-network:
         ipv4_address: 172.25.1.3
-
-#  mailer:
-#    image: schickling/mailcatcher
-#    ports:
-#      - "1025:1025"
-#      - "1080:1080"
 
 # Name our volumes
 volumes:
