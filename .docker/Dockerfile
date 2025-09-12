@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/appsvc/php:8.1-apache_20250724.8.tuxprod
+FROM mcr.microsoft.com/appsvc/php:8.1-apache_20250728.2.tuxprod
 #FROM mcr.microsoft.com/appsvc/php:8.0-apache_20240806.1.tuxprod
 #FROM mcr.microsoft.com/appsvc/php:8.0-apache_20240502.1.tuxprod
 #FROM mcr.microsoft.com/appsvc/php:8.0-apache-xdebug_20230721.2.tuxprod
