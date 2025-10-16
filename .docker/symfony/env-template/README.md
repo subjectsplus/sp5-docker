@@ -15,6 +15,7 @@ This directory contains templates for environment configuration files used in th
    Examples:
    - `cp .env.TEMPLATE .env.symfony.calder.dev`
    - `cp .env.TEMPLATE .env.symfony.richter.prod`
+   - file should be place in .docker/symfony/
 
 2. **Edit the copied file** and replace all placeholder values with actual configuration:
    - Secrets and passwords should be strong and unique
