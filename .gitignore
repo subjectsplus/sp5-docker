@@ -202,7 +202,7 @@ SubjectsPlus
 #Ignore vscode AI rules
 .github/copilot-instructions.md
 
-**/.docker/symfony/.env*
+.docker/symfony/.env*
 
-**/.env.docker.calder.dev
-**/.env.docker.richter.dev
+.env.docker.calder.dev
+.env.docker.richter.dev
